@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discrete Probability Distributions — P2</title>
+<style>
+:root{--bg:#0b1020;--panel:#131b2e;--panel2:#18233a;--text:#edf3ff;--muted:#a8b6d4;--accent:#7c9cff;--accent2:#5ce1c6;--border:#2a3855;--danger:#ff8390;--shadow:0 16px 45px rgba(0,0,0,.22)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top left,#17264a 0,#0b1020 48%);color:var(--text);min-height:100vh}
+header{padding:28px 5vw 20px;border-bottom:1px solid var(--border);background:rgba(9,14,29,.7)}
+.brand{max-width:1180px;margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.75rem;color:var(--accent2);font-weight:800}
+h1{margin:.45rem 0;font-size:clamp(1.7rem,4vw,2.7rem)}.subtitle{color:var(--muted);margin:0;line-height:1.55}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.navlink{padding:10px 14px;border:1px solid var(--border);border-radius:12px;color:var(--muted);text-decoration:none;font-weight:700}.navlink.active,.navlink:hover{background:var(--accent);color:#081022;border-color:var(--accent)}
+main{max-width:1180px;margin:28px auto;padding:0 5vw 60px;display:grid;gap:20px}
+.panel{background:linear-gradient(145deg,rgba(24,35,58,.96),rgba(16,24,42,.96));border:1px solid var(--border);border-radius:20px;padding:clamp(18px,3vw,28px);box-shadow:var(--shadow)}
+h2{margin:0 0 12px;font-size:1.3rem}h3{margin:0 0 8px}p{line-height:1.65;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.stat{padding:18px;background:var(--panel2);border:1px solid var(--border);border-radius:16px}.stat .label{color:var(--muted);font-size:.9rem}.stat .value{font-size:1.7rem;font-weight:800;margin-top:8px;overflow-wrap:anywhere}
+label{display:block;font-weight:700;margin-bottom:7px}input{width:100%;padding:12px 13px;border-radius:11px;border:1px solid var(--border);background:#0b1222;color:var(--text);font-size:1rem}
+button{border:0;background:var(--accent);color:#081022;font-weight:800;border-radius:11px;padding:12px 16px;cursor:pointer}button:hover{filter:brightness(1.08)}.formrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;align-items:end}.hint{font-size:.88rem;color:var(--muted)}.error{color:var(--danger);font-weight:700;min-height:1.3em}.formula{font-family:Cambria,Georgia,serif;background:#0b1222;padding:14px;border-radius:12px;border:1px solid var(--border);overflow-wrap:anywhere;color:#dce6ff}
+.placeholder{opacity:.78}.pill{display:inline-block;border-radius:999px;padding:5px 9px;background:#243458;color:#cbd7ff;font-size:.8rem;font-weight:800}
+canvas{width:100%;height:340px;display:block;background:#0b1222;border:1px solid var(--border);border-radius:14px}
+footer{text-align:center;color:var(--muted);padding:20px;border-top:1px solid var(--border)}
+@media(max-width:600px){header{padding:22px 5vw}nav{gap:7px}.navlink{padding:9px 11px}canvas{height:280px}}
+</style>
+</head>
+<body>
+<header><div class="brand">
+<div class="eyebrow">Statistics Lab · Version P2</div>
+<h1>Discrete Probability Distributions</h1>
+<p class="subtitle">An interactive learning application for undergraduate AIML students.</p>
+<nav aria-label="Main navigation">
+<a class="navlink active" href="#home">Home</a><a class="navlink" href="#binomial">Binomial</a><a class="navlink" href="#poisson">Poisson</a><a class="navlink" href="#geometric">Geometric</a>
+</nav></div></header>
+<main>
+<section class="panel" id="home"><span class="pill">P2 · Requirements implemented: 1–2</span><h2 style="margin-top:14px">Welcome to Statistics Lab</h2><p>Explore discrete probability distributions through clear explanations and interactive tools.</p></section>
+<div id="binomial">
+<section class="panel">
+<h2>Binomial parameters</h2>
+<p>Set the number of trials <strong>n</strong> and the probability of success <strong>p</strong>.</p>
+<div class="formrow">
+ <div><label for="n">Number of trials (n)</label><input id="n" type="number" min="1" step="1" value="20"></div>
+ <div><label for="p">Probability of success (p)</label><input id="p" type="number" min="0" max="1" step="0.01" value="0.35"></div>
+ <div><button id="apply" type="button">Apply parameters</button></div>
+</div>
+<p class="hint">n must be a positive integer; p must be between 0 and 1, inclusive.</p>
+<p id="error" class="error" role="alert"></p><p id="selected"><strong>Current parameters: n = 20, p = 0.35</strong></p>
+</section>
+<section class="panel"><h2>Binomial Distribution</h2>
+<p>The Binomial distribution models the number of successes in a fixed number of independent trials, with the same probability of success on every trial.</p>
+<div class="formula">P(X = k) = C(n, k) p<sup>k</sup> (1 − p)<sup>n−k</sup></div>
+</section>
+</div>
+<section class="panel placeholder" id="poisson"><h2>Poisson Distribution</h2><p>This module is reserved for a future version.</p></section>
+<section class="panel placeholder" id="geometric"><h2>Geometric Distribution</h2><p>This module is reserved for a future version.</p></section>
+</main><footer>Statistics Lab · Discrete Probability Distributions · P2</footer>
+<script>
+const nInput=document.getElementById('n');
+const pInput=document.getElementById('p');
+const applyBtn=document.getElementById('apply');
+const selected=document.getElementById('selected');
+const error=document.getElementById('error');
+let n=20,p=0.35;
+function chooseParams(){
+  const nv=Number(nInput.value), pv=Number(pInput.value);
+  if(!Number.isInteger(nv)||nv<1){error.textContent='n must be a positive integer.';return false}
+  if(!Number.isFinite(pv)||pv<0||pv>1){error.textContent='p must be between 0 and 1, inclusive.';return false}
+  n=nv;p=pv;error.textContent='';selected.textContent=`Current parameters: n = ${n}, p = ${p}`;
+  updateAll();return true
+}
+function combination(nn,kk){
+  if(kk<0||kk>nn||!Number.isInteger(kk))return 0;
+  kk=Math.min(kk,nn-kk);let result=1;
+  for(let i=1;i<=kk;i++)result=result*(nn-kk+i)/i;
+  return result
+}
+function pmfProb(kk){if(kk<0||kk>n||!Number.isInteger(kk))return 0;return combination(n,kk)*Math.pow(p,kk)*Math.pow(1-p,n-kk)}
+function fmt(x){if(!Number.isFinite(x))return '—';return Number(x).toLocaleString(undefined,{maximumFractionDigits:8})}
+function updateAll(){
+
+}
+applyBtn.addEventListener('click',chooseParams);
+if(document.getElementById('k'))document.getElementById('k').addEventListener('input',updateAll);
+if(document.getElementById('ck'))document.getElementById('ck').addEventListener('input',updateAll);
+function init(){
+ nInput.value='20';pInput.value='0.35';
+ if(document.getElementById('k'))document.getElementById('k').value='7';
+ if(document.getElementById('ck'))document.getElementById('ck').value='7';
+ selected.textContent=`Current parameters: n = ${n}, p = ${p}`;
+ updateAll();
+}
+
+init();
+</script>
+</body></html>
